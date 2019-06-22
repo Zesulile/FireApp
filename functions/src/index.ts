@@ -9,7 +9,7 @@ try {
     admin.initializeApp();
 } catch (e) { }
 
-export const createChat = functions.firestore.document('chats/{id}').onCreate((snap, context) => {
+export const createChat = functions.firestore.document('chats/{id}').onCreate(async (snap, context) => {
 
     const data = snap.data();
     let to: any = null;
@@ -20,14 +20,17 @@ export const createChat = functions.firestore.document('chats/{id}').onCreate((s
         }
     }
 
+    const sender = admin.app().firestore().collection('profile').doc(data!.from);
     const ref = admin.app().firestore().collection('profile').doc(to);
+    const senderProfile = await sender.get();
+
     ref.get().then((res) => {
         const profile = res.data();
 
         if (profile!.token) {
             const payload = {
                 notification: {
-                    title: `You have a new message!`,
+                    title: senderProfile!.data()!.displayName,
                     body: data!.message
                 }
             };
