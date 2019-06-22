@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { HttpClientModule } from '@angular/common/http';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'; // new line
 
@@ -23,6 +24,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuthGuard } from '@angular/fire/auth-guard';
 import { LoaderComponent } from './shared/components/loader/loader.component';
+import { ChatService } from './shared/services/chat.service';
 
 
 @NgModule({
@@ -37,6 +39,7 @@ import { LoaderComponent } from './shared/components/loader/loader.component';
     AppRoutingModule,
     NgbModule,
     FormsModule,
+    HttpClientModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireMessagingModule
@@ -44,7 +47,8 @@ import { LoaderComponent } from './shared/components/loader/loader.component';
   providers: [
     AngularFireAuth,
     AngularFirestore,
-    AngularFireAuthGuard
+    AngularFireAuthGuard,
+    ChatService
   ],
   bootstrap: [AppComponent]
 })

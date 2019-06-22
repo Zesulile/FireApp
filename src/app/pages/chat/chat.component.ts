@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import * as firebase from 'firebase';
 import { Router } from '@angular/router';
 import { AngularFireMessaging } from '@angular/fire/messaging';
+import { ChatService } from 'src/app/shared/services/chat.service';
 
 @Component({
   selector: 'app-chat',
@@ -29,7 +30,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   constructor(
     private afAuth: AngularFireAuth, private afs: AngularFirestore,
-    private router: Router, private afMessaging: AngularFireMessaging
+    private router: Router, private afMessaging: AngularFireMessaging, private chatService: ChatService
   ) {
     this.users = new Array<any>();
     this.chats = new Array<any>();
@@ -51,12 +52,25 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.users = profiles.filter((profile: any) => profile.email !== user.email);
         this.tempUsers = [...this.users];
         this.isLoading = false;
+
       });
     });
 
     this.afMessaging.messages
       .subscribe((message: any) => {
-        console.log(message);
+
+        const data = message.data;
+        const sub = this.afs.collection('chats', ref => ref
+          .where(data.receiver, '==', true)
+          .where(this.profile.id, '==', true)
+          .where('read', '==', false))
+          .valueChanges().subscribe((res) => {
+
+            const index = this.users.findIndex(user => user.id === data.receiver);
+            this.users[index].unread = res.length.toString();
+
+            sub.unsubscribe();
+          });
       });
   }
 
@@ -115,9 +129,12 @@ export class ChatComponent implements OnInit, OnDestroy {
 
         if (isValidDate) {
           this.chats = [...res];
+          this.updateRead();
         } else {
           isValidDate = true;
         }
+
+
       }, err => {
         console.log(err);
       });
@@ -129,6 +146,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     // We will be use to set a listener to update our unread messages
   }
 
+  private updateRead(): void {
+    this.chatService.updateRead({
+      sender: this.senderID,
+      receiver: this.profile.id
+    }).subscribe((res) => {
+
+    });
+  }
   public search(arg: any): void {
     const text = arg.target.value;
 
