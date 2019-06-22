@@ -1,0 +1,14 @@
+[debug] [2019-06-22T08:49:16.568Z] ----------------------------------------------------------------------
+[debug] [2019-06-22T08:49:16.580Z] Command:       C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2019-06-22T08:49:16.580Z] CLI Version:   7.0.1
+[debug] [2019-06-22T08:49:16.580Z] Platform:      win32
+[debug] [2019-06-22T08:49:16.581Z] Node Version:  v10.15.0
+[debug] [2019-06-22T08:49:16.583Z] Time:          Sat Jun 22 2019 10:49:16 GMT+0200 (South Africa Standard Time)
+[debug] [2019-06-22T08:49:16.584Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-06-22T08:49:16.603Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-06-22T08:49:16.604Z] > authorizing via signed-in user
+[debug] [2019-06-22T08:49:16.604Z] [iam] checking project firechat-14ad7 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2019-06-22T08:49:16.607Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/firechat-14ad7:testIamPermissions  
+
+[debug] [2019-06-22T08:49:19.009Z] <<< HTTP RESPONSE 200

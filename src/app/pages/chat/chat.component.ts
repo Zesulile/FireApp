@@ -68,7 +68,10 @@ export class ChatComponent implements OnInit, OnDestroy {
             .valueChanges().subscribe((res) => {
 
               const index = this.users.findIndex(user => user.id === data.sender);
-              this.users[index].unread = res.length.toString();
+
+              if (this.users[index]) {
+                this.users[index].unread = res.length.toString();
+              }
 
               sub.unsubscribe();
             });
@@ -109,17 +112,23 @@ export class ChatComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (this.subscriptionConvos) {
+      this.subscriptionConvos.unsubscribe();
+    }
+
     this.chats = new Array<any>();
     this.senderID = sender.id;
-    this.senderName = sender.displayName;
 
     const index = this.users.findIndex(user => user.id === sender.id);
-    this.users[index].unread = null;
+
+    if (this.users[index]) {
+      this.users[index].unread = null;
+    }
 
     let isValidDate = true;
 
     this.subscriptionConvos = this.afs.collection('chats', ref => ref
-      .where(`${sender.id}.participant`, '==', true)
+      .where(`${this.senderID}.participant`, '==', true)
       .where(`${this.profile.id}.participant`, '==', true))
       .valueChanges().pipe(map(actions => {
         return actions.map((value: any) => {
@@ -140,12 +149,11 @@ export class ChatComponent implements OnInit, OnDestroy {
 
         if (isValidDate) {
           this.chats = [...res];
+          this.senderName = sender.displayName;
           this.updateRead();
         } else {
           isValidDate = true;
         }
-
-
       }, err => {
         console.log(err);
       });
