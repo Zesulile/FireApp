@@ -62,9 +62,9 @@ export class ChatComponent implements OnInit, OnDestroy {
         const data = message.data;
         if (data.sender !== this.senderID) {
           const sub = this.afs.collection('chats', ref => ref
-            .where(data.receiver, '==', true)
-            .where(this.profile.id, '==', true)
-            .where('read', '==', false))
+            .where(`${this.senderID}.participant`, '==', true)
+            .where(`${this.profile.id}.participant`, '==', true)
+            .where(`${this.senderID}.read`, '==', false))
             .valueChanges().subscribe((res) => {
 
               const index = this.users.findIndex(user => user.id === data.sender);
@@ -85,14 +85,20 @@ export class ChatComponent implements OnInit, OnDestroy {
     const data = {
       from: this.profile.id,
       message: this.message,
-      read: false,
       created: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     this.message = '';
 
-    data[this.profile.id] = true;
-    data[this.senderID] = true;
+    data[this.profile.id] = {
+      participant: true,
+      read: true
+    };
+
+    data[this.senderID] = {
+      participant: true,
+      read: false
+    };
 
     this.afs.collection('chats').add(data);
   }
@@ -107,11 +113,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.senderID = sender.id;
     this.senderName = sender.displayName;
 
+    const index = this.users.findIndex(user => user.id === sender.id);
+    this.users[index].unread = null;
+
     let isValidDate = true;
 
     this.subscriptionConvos = this.afs.collection('chats', ref => ref
-      .where(sender.id, '==', true)
-      .where(this.profile.id, '==', true))
+      .where(`${sender.id}.participant`, '==', true)
+      .where(`${this.profile.id}.participant`, '==', true))
       .valueChanges().pipe(map(actions => {
         return actions.map((value: any) => {
           const receiver = value.from === this.profile.id;

@@ -1,13 +1,15 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
 //
 
 try {
     admin.initializeApp();
+
 } catch (e) { }
+
+const cors = require('cors')({ origin: true });
 
 export const createChat = functions.firestore.document('chats/{id}').onCreate(async (snap, context) => {
 
@@ -53,42 +55,45 @@ export const createChat = functions.firestore.document('chats/{id}').onCreate(as
 });
 
 
-export const updateRead = functions.https.onRequest((request, response) => {
-    if (request.method === 'POST') {
+export const updateRead = functions.https.onRequest(async (request, response) => {
 
-        if (request!.body['sender'] && request!.body['receiver']) {
+    cors(request, response, () => {
+        if (request.method === 'POST') {
 
-            const batch = admin.app().firestore().batch();
+            if (request!.body['sender'] && request!.body['receiver']) {
 
-            const chats = admin.app().firestore().collection('chats');
+                const batch = admin.app().firestore().batch();
 
-            const ref = chats.where(request!.body['sender'], '==', true)
-                .where(request!.body['receiver'], '==', true).where('read', '==', false);
+                const chats = admin.app().firestore().collection('chats');
 
-            ref.get().then(res => {
-                res.docs.forEach((doc) => {
-                    batch.update(chats.doc(doc!.id), { "read": true });
+                const ref = chats.where(`${request!.body['sender']}.participant`, '==', true)
+                    .where(`${request!.body['receiver']}.participant`, '==', true)
+                    .where(`${request!.body['sender']}.read`, '==', false);
+
+                ref.get().then(res => {
+                    res.docs.forEach((doc) => {
+                        batch.update(chats.doc(doc!.id), { "read": true });
+                    });
+
+                    batch.commit().then(function () {
+                        console.log('commit');
+                        response.send(true);
+                    }).catch(err => {
+                        console.log('commit', err);
+                        response.status(500).send('Server Error!');
+                    })
+                }).catch((err) => {
+                    console.log('get', err);
+                    response.status(500).send('Server Error!');
                 });
 
-                batch.commit().then(function () {
-                    console.log('commit');
-                    response.send(true);
-                }).catch(err => {
-                    console.log('commit', err);
-                    response.status(500).send('Server Error!');
-                })
-            }).catch((err) => {
-                console.log('get', err);
+            } else {
                 response.status(500).send('Server Error!');
-            });
-
+            }
         } else {
-            response.status(500).send('Server Error!');
+            response.status(403).send('Forbidden!');
         }
-    } else {
-        response.status(403).send('Forbidden!');
-    }
-
+    });
 
 });
 

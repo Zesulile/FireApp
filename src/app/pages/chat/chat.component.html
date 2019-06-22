@@ -40,7 +40,7 @@
                       <small class="font-italic text-success"
                         [class.text-danger]="!user.online">{{user.online ? 'Online' : 'Offline'}}</small>
                     </div>
-                    <span class="badge badge-success ml-auto" *ngIf="user.unread">new {{user.unread}}</span>
+                    <span class="badge badge-success ml-auto" *ngIf="user.unread && user.unread === '0'">new {{user.unread}}</span>
                   </div>
                 </div>
               </div>
