@@ -1,0 +1,116 @@
+<div class="chat-container">
+  <div class="row">
+    <div class="col-lg-3 p-0">
+      <!-- Sidebar area starts here -->
+      <div class="sidebar p-3">
+        <div class="py-1 px-3">
+          <div class="d-flex align-items-center">
+            <h4 class="font-weight-bold p-0 m-0">FireChat
+              <small class="ml-1 font-italic" *ngIf="profile">({{profile.displayName}})</small>
+            </h4>
+
+            <i class="material-icons ml-auto c-pointer" (click)="logout()">
+              power_settings_new
+            </i>
+          </div>
+
+
+          <div class="input-group mt-3">
+            <div class="input-group-prepend border-right-0">
+              <span class="input-group-text rounded-left-pill border-0" id="basic-addon1">
+                <i class="material-icons">
+                  search
+                </i>
+              </span>
+            </div>
+            <input type="text" class="form-control rounded-right-pill border-0" placeholder="Search User"
+              aria-label="User" (keyup)="search($event)" aria-describedby="basic-addon1">
+          </div>
+        </div>
+        <div class="container mt-4">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item list-group-item-action" *ngFor="let user of users">
+              <div class="media" (click)="getConversations(user)">
+                <img [src]="user.photoURL" width="55" height="55" class="mr-3 rounded-circle" alt="profile_image">
+                <div class="media-body pt-1">
+
+                  <div class="d-flex align-items-center">
+                    <div>
+                      <h6 class="m-0 font-weight-bold">{{user.displayName}}</h6>
+                      <small class="font-italic text-success"
+                        [class.text-danger]="!user.online">{{user.online ? 'Online' : 'Offline'}}</small>
+                    </div>
+                    <span class="badge badge-success ml-auto" *ngIf="user.unread">new {{user.unread}}</span>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- Sidebar area ends here -->
+    </div>
+    <div class="col-lg-9 p-0">
+      <!-- Chat area starts here -->
+      <div class="chat-area">
+        <div class="container-fluid p-2 bg-white chat-header shadow-sm">
+          <h5 class="font-weight-bold px-2">{{senderName || 'Select a user'}}</h5>
+        </div>
+
+        <div class="container-fluid p-4 chat-area-bubble">
+
+          <div class="bubble" *ngFor="let chat of chats;">
+            <div class="media mb-4" *ngIf="chat.isSender">
+              <img [src]="chat.picture" width="45" class="mr-3 rounded-circle shadow-sm" alt="profile_image">
+              <div class="media-body">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-body p-2">
+                    <p class="m-0">{{chat.message}}</p>
+                  </div>
+                  <div class="card-footer p-0 text-right bg-transparent border-0 small">
+                    <span class="small mr-2 text-muted">{{chat.created | date:'MMM d, y, h:mm a'}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="media sender mb-4" *ngIf="!chat.isSender">
+              <div class="media-body text-right">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-body p-2">
+                    <p class="m-0">{{chat.message}}</p>
+                  </div>
+                  <div class="card-footer p-0 bg-transparent border-0 small">
+                    <span class="small mr-2 text-muted">{{chat.created | date:'MMM d, y, h:mm a'}}</span>
+                  </div>
+                </div>
+              </div>
+              <img [src]="chat.picture" width="45" class="ml-3 rounded-circle shadow-sm" alt="profile_image">
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      <!-- Chat area endss here -->
+
+      <!-- Message area starts here -->
+      <div class="message-area">
+        <div class="input-group" *ngIf="senderName">
+          <textarea class="form-control border-0 bg-white rounded-0" name="message" id="message" [(ngModel)]="message"
+            aria-label="With textarea"></textarea>
+          <div class="input-group-append">
+            <span class="input-group-text border-0 px-4" (click)="sendMessage()">
+              <i class="material-icons">
+                send
+              </i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- Message area ends here -->
+    </div>
+  </div>
+</div>
+
+<app-loader *ngIf="isLoading"></app-loader>

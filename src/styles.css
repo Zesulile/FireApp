@@ -1,1 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  font-family: 'Quicksand', sans-serif;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(49, 46, 53, 0.5);
+}
