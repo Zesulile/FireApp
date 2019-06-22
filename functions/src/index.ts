@@ -30,7 +30,7 @@ export const createChat = functions.firestore.document('chats/{id}').onCreate(as
         if (profile!.token) {
             const payload = {
                 data: {
-                    receiver: to
+                    sender: data!.from
                 },
                 notification: {
                     title: senderProfile!.data()!.displayName,

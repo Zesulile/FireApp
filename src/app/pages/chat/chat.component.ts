@@ -60,17 +60,19 @@ export class ChatComponent implements OnInit, OnDestroy {
       .subscribe((message: any) => {
 
         const data = message.data;
-        const sub = this.afs.collection('chats', ref => ref
-          .where(data.receiver, '==', true)
-          .where(this.profile.id, '==', true)
-          .where('read', '==', false))
-          .valueChanges().subscribe((res) => {
+        if (data.sender !== this.senderID) {
+          const sub = this.afs.collection('chats', ref => ref
+            .where(data.receiver, '==', true)
+            .where(this.profile.id, '==', true)
+            .where('read', '==', false))
+            .valueChanges().subscribe((res) => {
 
-            const index = this.users.findIndex(user => user.id === data.receiver);
-            this.users[index].unread = res.length.toString();
+              const index = this.users.findIndex(user => user.id === data.sender);
+              this.users[index].unread = res.length.toString();
 
-            sub.unsubscribe();
-          });
+              sub.unsubscribe();
+            });
+        }
       });
   }
 
